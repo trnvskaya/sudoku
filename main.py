@@ -2,6 +2,8 @@ import numpy as np
 import random
 from tqdm import tqdm
 import itertools
+import sys
+from solve import *
 
 def parse_input(filename):
     with open(filename) as file:
@@ -12,31 +14,6 @@ def parse_input(filename):
     )
     return sudoku_matrix, fixed_positions
 
-def calculate_fitness(sudoku_matrix: np.array):
-    row_error = sum(9 - len(set(row)) for row in sudoku_matrix)
-    col_error = sum(9 -len(set(col)) for col in sudoku_matrix.T)
-    block_error = 0
-    for row_block in range(3):
-        for col_block in range(3):
-            block = sudoku_matrix[row_block * 3:(row_block+1) * 3, col_block * 3:(col_block+1) * 3]
-            block_error += (9-len(set(block.flatten())))
-
-    return row_error + col_error + block_error
-
-def is_valid(board, row, num):
-    if num in board[row, :]:
-        return False
-    return True
-
-def init_sudoku(board, fixed_positions):
-    random_board = board.copy()
-    for row in range(9):
-        for col in range(9):
-            if (row, col) not in fixed_positions:
-                valid_numbers = [num for num in range(1, 10) if is_valid(random_board, row, num)]
-                if valid_numbers:
-                    random_board[row, col] = random.choice(valid_numbers)
-    return random_board
 
 def random_neighbor(x, fixed_positions):
     mutable_positions = [
@@ -103,29 +80,16 @@ def hill_climbing(f: callable, x_init: np.array, n_iters: int, fixed_positions, 
 
 def main():
     sudoku_matrix, fixed_positions = parse_input('sudoku.txt')
+    algorithm = sys.argv[1]
     print("Initial Sudoku Grid:")
     print(sudoku_matrix)
     print("-" * 40)
-
-    sudoku_matrix_init = init_sudoku(sudoku_matrix, fixed_positions)
-    print("Initialized Sudoku Grid:")
-    print(sudoku_matrix_init)
-    print("Initialized Fitness:", calculate_fitness(sudoku_matrix_init))
-    print("-" * 40)
-
-    # Call hill climbing
-    sudoku_matrix_final = hill_climbing(
-        f=calculate_fitness,
-        x_init=sudoku_matrix_init,
-        n_iters=50000,
-        fixed_positions=fixed_positions,
-        variant="simple",
-        steepest=True,
-    )
-
-    print("Final Sudoku Grid:")
-    print(sudoku_matrix_final)
-    print("Final Fitness:", calculate_fitness(sudoku_matrix_final))
+    if algorithm == 'backtracking':
+        solve_backtracking(sudoku_matrix, fixed_positions)
+        print("Sudoku Grid:")
+        print(sudoku_matrix)
+        print("Fitness is ", calculate_fitness(sudoku_matrix))
+        print("-" * 40)
 
 if __name__ == '__main__':
     main()
