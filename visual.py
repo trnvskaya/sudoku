@@ -1,27 +1,55 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 
 
+def is_conflict(grid, row, col):
 
-def animate_sudoku(grids, interval=50):
-    """
-    Animates the solving process of Sudoku using Matplotlib.
+    num = grid[row, col]
+    grid_size = grid.shape[0]
+    block_size = int(np.sqrt(grid_size))
 
-    :param grids: List of 2D NumPy arrays representing each step of the solving process.
-    :param interval: Time delay (in ms) between frames.
-    """
-    fig, ax = plt.subplots()
-    ax.set_title("Sudoku Solving Progress")
+    if list(grid[row, :]).count(num) > 1 or list(grid[:, col]).count(num) > 1:
+        return True
 
-    # Display the first frame
-    grid_size = grids[0].shape[0]
-    im = ax.imshow(grids[0], cmap="coolwarm", vmin=1, vmax=grid_size)
+    start_row, start_col = (row // block_size) * block_size, (col // block_size) * block_size
+    block = grid[start_row:start_row + block_size, start_col:start_col + block_size]
+    if list(block.flatten()).count(num) > 1:
+        return True
+    return False
 
-    def update(frame_idx):
-        ax.set_title(f"Step {frame_idx + 1}")
-        im.set_array(grids[frame_idx])
-        return [im]
 
-    ani = animation.FuncAnimation(fig, update, frames=len(grids), interval=interval, repeat=False)
+def draw_sudoku(grid, fixed_positions):
+    grid_size = grid.shape[0]
+    block_size = int(np.sqrt(grid_size))
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    for i in range(grid_size + 1):
+        lw = 2 if i % block_size == 0 else 0.5
+        ax.plot([i, i], [0, grid_size], "k", lw=lw)
+        ax.plot([0, grid_size], [i, i], "k", lw=lw)
+
+    for row in range(grid_size):
+        for col in range(grid_size):
+            num = grid[row, col]
+            if num == 0:
+                continue
+
+            if (row, col) in fixed_positions:
+                color = "green"
+            elif is_conflict(grid, row, col):
+                color = "red"
+            else:
+                color = "white"
+
+            ax.add_patch(plt.Rectangle((col, grid_size - row - 1), 1, 1, color=color))
+
+            ax.text(col + 0.5, grid_size - row - 0.5, str(num),
+                    ha="center", va="center", fontsize=14, color="black")
+
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlim(0, grid_size)
+    ax.set_ylim(0, grid_size)
+    ax.set_title("Sudoku Visualization")
     plt.show()

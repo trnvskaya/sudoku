@@ -1,10 +1,13 @@
 import sys
 from solve import *
+from visual import draw_sudoku
+
 
 def parse_input(filename):
     with open(filename) as file:
         sudoku_matrix = [list(map(int, line.strip().split())) for line in file if line.strip()]
     sudoku_matrix = np.array(sudoku_matrix)
+
     fixed_positions = set(
         (i, j) for i in range(sudoku_matrix.shape[0]) for j in range(sudoku_matrix.shape[1]) if sudoku_matrix[i, j] != 0
     )
@@ -52,6 +55,7 @@ def print_sudoku(sudoku_matrix, fixed_positions, algorithm):
     print(result)
     print("Final Fitness (total error) is ", calculate_fitness(result))
     print("-" * 40)
+    draw_sudoku(result, fixed_positions)
 
 def main():
     filename = sys.argv[1]
@@ -67,6 +71,7 @@ def main():
         print(sudoku_matrix)
         print("Fitness is ", calculate_fitness(sudoku_matrix))
         print("-" * 40)
+        draw_sudoku(sudoku_matrix, fixed_positions)
     elif algorithm == 'hillclimbing':
         print_sudoku(sudoku_matrix, fixed_positions, algorithm_type)
 
