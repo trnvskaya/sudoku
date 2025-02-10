@@ -1,19 +1,5 @@
 import numpy as np
 import random
-import random
-import itertools
-import copy
-
-
-def init_sudoku(board, fixed_positions):
-    random_board = board.copy()
-    empty_positions = [
-        (row, col) for row in range(9) for col in range(9) if (row, col) not in fixed_positions
-    ]
-    for row, col in empty_positions:
-        random_board[row, col] = random.randint(1, 9)
-
-    return random_board
 
 def calculate_fitness(grid):
     rows = grid.shape[0]
@@ -66,13 +52,53 @@ def solve_backtracking(grid, fixed_positions):
 
     return backtrack()
 
-def hill_climbing(grid, fixed_positions, max_iterations=10000, max_restarts = 10):
-    best_solution = None
-    best_fitness = float('inf')
+def hill_climbing(
+        f: callable,
+        x_init: np.array,
+        fixed_positions: set,
+        max_iterations=10000,
+        restarts=10):
 
-    for i in range(max_restarts):
-        current_sudoku = grid.copy()
-        current_fitness = calculate_fitness(current_sudoku)
+    grid_size = x_init.shape[0]
+    best_grid = None
+    best_error = float('inf')
 
-    pass
+    for _ in range(restarts):
+        current_grid = x_init.copy()
+        current_error = f(current_grid)
+
+        for _ in range(max_iterations):
+            mutable_positions = [(row, col) for row in range(grid_size) for col in range(grid_size)
+                                 if (row, col) not in fixed_positions]
+
+            if len(mutable_positions) < 2:
+                break  # No moves possible
+
+            # Pick two **random** mutable cells within the **same row**
+            row = random.choice(range(grid_size))
+            row_positions = [col for col in range(grid_size) if (row, col) in mutable_positions]
+
+            if len(row_positions) < 2:
+                continue  # Skip this iteration if not enough mutable numbers
+
+            col1, col2 = random.sample(row_positions, 2)
+
+            new_grid = current_grid.copy()
+            new_grid[row, col1], new_grid[row, col2] = new_grid[row, col2], new_grid[row, col1]
+
+            new_error = f(new_grid)
+
+            if new_error < current_error:  # Accept better moves
+                current_grid, current_error = new_grid, new_error
+
+            if current_error == 0:
+                return current_grid, 0
+
+        if current_error < best_error:
+            best_grid, best_error = current_grid, current_error
+
+    return best_grid
+
+
+
 
