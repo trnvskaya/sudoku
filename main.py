@@ -48,12 +48,12 @@ def init_sudoku(grid, mutation_type):
 
 def print_sudoku(sudoku_matrix, fixed_positions, algorithm, visual):
     initial_sudoku = init_sudoku(sudoku_matrix, mutation_type=algorithm)
-    result, frames = hill_climbing(calculate_fitness, initial_sudoku, fixed_positions, mutation_type=algorithm)
+    result, frames, algorithm_name = hill_climbing(calculate_fitness, initial_sudoku, fixed_positions, mutation_type=algorithm)
     print("Final Fitness (total error) is ", calculate_fitness(result))
     if visual == 'static':
         draw_sudoku_static(result, fixed_positions)
     elif visual == 'dynamic':
-        draw_sudoku_dynamic(frames, fixed_positions)
+        draw_sudoku_dynamic(frames, fixed_positions, algorithm_name)
 
 
 def main():
@@ -70,7 +70,7 @@ def main():
         if visual == 'static':
             draw_sudoku_static(sudoku_matrix, fixed_positions)
         elif visual == 'dynamic':
-            draw_sudoku_dynamic(frames, fixed_positions)
+            draw_sudoku_dynamic(frames, fixed_positions, algorithm)
     elif algorithm == 'hillclimbing':
         print_sudoku(sudoku_matrix, fixed_positions, algorithm_type, visual)
 

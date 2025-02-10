@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from static_visual import is_conflict
 
-def draw_sudoku_dynamic(frames, fixed_positions):
+def draw_sudoku_dynamic(frames, fixed_positions, algorithm_name):
     fig, ax = plt.subplots(figsize=(6, 6))
 
     def update(frame):
@@ -16,6 +16,9 @@ def draw_sudoku_dynamic(frames, fixed_positions):
         ax.grid(which="both", color="black", linewidth=1.5)
         ax.set_xticklabels([])
         ax.set_yticklabels([])
+
+        ax.text(0.5, grid.shape[0] + 0.5, f"Algorithm: {algorithm_name}", ha="left", va="center", fontsize=12,
+                fontweight='bold')
 
         for i in range(grid.shape[0]):
             for j in range(grid.shape[1]):

@@ -35,6 +35,10 @@ def is_valid (grid, row, col, num):
 
 def solve_backtracking(grid, fixed_positions):
     rows, cols = grid.shape
+    for row in range(rows):
+        for col in range(cols):
+            if (row, col) not in fixed_positions:
+                grid[row, col] = 0
 
     frames = []
 
@@ -69,6 +73,7 @@ def hill_climbing(
     grid_size = x_init.shape[0]
     best_grid = None
     best_error = float('inf')
+    algorithm_name = "Hill Climbing"
 
     frames = []
 
@@ -123,9 +128,14 @@ def hill_climbing(
                 current_grid, current_error = new_grid, new_error
 
             if current_error == 0:
-                return current_grid, frames
+                return current_grid, frames, algorithm_name
 
         if current_error < best_error:
             best_grid, best_error = current_grid, current_error
-
-    return best_grid, frames
+    if calculate_fitness(best_grid) != 0:
+        frames_new = solve_backtracking(
+            best_grid,
+            fixed_positions)
+        frames.extend(frames_new)
+        algorithm_name = "Hill Climbing with Backtracking"
+    return best_grid, frames, algorithm_name
