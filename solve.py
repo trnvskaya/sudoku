@@ -36,6 +36,8 @@ def is_valid (grid, row, col, num):
 def solve_backtracking(grid, fixed_positions):
     rows, cols = grid.shape
 
+    frames = []
+
     def backtrack():
         for row in range(rows):
             for col in range(cols):
@@ -43,21 +45,24 @@ def solve_backtracking(grid, fixed_positions):
                     for num in range(1, rows + 1):  # Try numbers 1 to N (N = rows)
                         if is_valid(grid, row, col, num):
                             grid[row, col] = num
+                            frames.append(grid.copy())
                             if backtrack():
                                 return True
                             grid[row, col] = 0  # Undo if no solution found
+                            frames.append(grid.copy())
 
                     return False # No solution found
         return True
 
-    return backtrack()
+    backtrack()
+    return frames
 
 
 def hill_climbing(
         f: callable,
         x_init: np.array,
         fixed_positions: set,
-        max_iterations=10000,
+        max_iterations=5000,
         restarts=10,
         mutation_type="row_swap"):
 
@@ -65,8 +70,11 @@ def hill_climbing(
     best_grid = None
     best_error = float('inf')
 
+    frames = []
+
     for _ in range(restarts):
         current_grid = x_init.copy()
+        frames.append(current_grid.copy())
         current_error = f(current_grid)
 
         for _ in range(max_iterations):
@@ -107,6 +115,7 @@ def hill_climbing(
 
             new_grid = current_grid.copy()
             new_grid[row1, col1], new_grid[row2, col2] = new_grid[row2, col2], new_grid[row1, col1]
+            frames.append(new_grid.copy())
 
             new_error = f(new_grid)
 
@@ -114,9 +123,9 @@ def hill_climbing(
                 current_grid, current_error = new_grid, new_error
 
             if current_error == 0:
-                return current_grid
+                return current_grid, frames
 
         if current_error < best_error:
             best_grid, best_error = current_grid, current_error
 
-    return best_grid
+    return best_grid, frames

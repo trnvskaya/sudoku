@@ -18,7 +18,7 @@ def is_conflict(grid, row, col):
     return False
 
 
-def draw_sudoku(grid, fixed_positions):
+def draw_sudoku_static(grid, fixed_positions):
     grid_size = grid.shape[0]
     block_size = int(np.sqrt(grid_size))
 

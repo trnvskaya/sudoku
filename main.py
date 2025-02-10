@@ -1,6 +1,7 @@
 import sys
 from solve import *
-from visual import draw_sudoku
+from static_visual import draw_sudoku_static
+from dynamic_visual import draw_sudoku_dynamic
 
 
 def parse_input(filename):
@@ -44,34 +45,34 @@ def init_sudoku(grid, mutation_type):
 
     return random_board
 
-def print_sudoku(sudoku_matrix, fixed_positions, algorithm):
+
+def print_sudoku(sudoku_matrix, fixed_positions, algorithm, visual):
     initial_sudoku = init_sudoku(sudoku_matrix, mutation_type=algorithm)
-    print("Initial Sudoku Grid:")
-    print(initial_sudoku)
-    result = hill_climbing(calculate_fitness, initial_sudoku, fixed_positions, mutation_type=algorithm)
-    print("Final Sudoku Grid:")
-    print(result)
+    result, frames = hill_climbing(calculate_fitness, initial_sudoku, fixed_positions, mutation_type=algorithm)
     print("Final Fitness (total error) is ", calculate_fitness(result))
-    print("-" * 40)
-    draw_sudoku(result, fixed_positions)
+    if visual == 'static':
+        draw_sudoku_static(result, fixed_positions)
+    elif visual == 'dynamic':
+        draw_sudoku_dynamic(frames, fixed_positions)
+
 
 def main():
     filename = sys.argv[1]
     algorithm = sys.argv[2]
     algorithm_type = sys.argv[3] if algorithm == 'hillclimbing' else None
+    visual = sys.argv[4] if algorithm == 'hillclimbing' else sys.argv[3]
     sudoku_matrix, fixed_positions = parse_input('sudoku/' + filename)
     print("Initial Sudoku Grid:")
     print(sudoku_matrix)
     print("-" * 40)
     if algorithm == 'backtracking':
-        solve_backtracking(sudoku_matrix, fixed_positions)
-        print("Sudoku Grid:")
-        print(sudoku_matrix)
-        print("Fitness is ", calculate_fitness(sudoku_matrix))
-        print("-" * 40)
-        draw_sudoku(sudoku_matrix, fixed_positions)
+        frames = solve_backtracking(sudoku_matrix, fixed_positions)
+        if visual == 'static':
+            draw_sudoku_static(sudoku_matrix, fixed_positions)
+        elif visual == 'dynamic':
+            draw_sudoku_dynamic(frames, fixed_positions)
     elif algorithm == 'hillclimbing':
-        print_sudoku(sudoku_matrix, fixed_positions, algorithm_type)
+        print_sudoku(sudoku_matrix, fixed_positions, algorithm_type, visual)
 
 
 if __name__ == '__main__':
