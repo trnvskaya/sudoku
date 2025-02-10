@@ -58,7 +58,7 @@ python main.py puzzle.txt backtracking static
 Hill Climbing with Dynamic Visualization (using row_swap mutation):
 
 ```bash
-python main.py puzzle.txt hillclimbing dynamic row_swap
+python main.py puzzle.txt hillclimbing row_swap dynamic 
 ```
 
 
