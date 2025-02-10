@@ -2,6 +2,12 @@
 
 This project provides a solver for Sudoku puzzles using two algorithms: **Backtracking** and **Hill Climbing**. It includes visualizations of the solving process, both static and dynamic, using Matplotlib. 
 
+## Algorithm Workflow:
+
+- **Hill Climbing** is used to solve the Sudoku puzzle iteratively. If no solution is found within the specified iterations or restarts, it automatically switches to Backtracking.
+- **Backtracking** is used as a fallback to systematically explore all possible solutions until a valid one is found.
+
+
 ## Features:
 - Solve Sudoku using **Backtracking** or **Hill Climbing** algorithms.
 - Visualize the solving process with two options:
