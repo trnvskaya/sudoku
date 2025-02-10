@@ -49,8 +49,6 @@ def print_sudoku(sudoku_matrix, fixed_positions, algorithm):
     print("Initial Sudoku Grid:")
     print(initial_sudoku)
     result = hill_climbing(calculate_fitness, initial_sudoku, fixed_positions, mutation_type=algorithm)
-    if isinstance(result, tuple):
-        result = result[0]
     print("Final Sudoku Grid:")
     print(result)
     print("Final Fitness (total error) is ", calculate_fitness(result))

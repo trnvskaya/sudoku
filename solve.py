@@ -114,7 +114,7 @@ def hill_climbing(
                 current_grid, current_error = new_grid, new_error
 
             if current_error == 0:
-                return current_grid, 0
+                return current_grid
 
         if current_error < best_error:
             best_grid, best_error = current_grid, current_error
